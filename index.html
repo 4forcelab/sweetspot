@@ -5,7 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="甜蜜值">
 <meta name="theme-color" content="#0a0a0a">
+<link rel="manifest" href="manifest.json">
 <title>甜蜜值 · 比價器</title>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y79Z23GQYQ"></script>
@@ -647,6 +649,22 @@ let items = [];
 let selectedCat = '不限';
 let idCounter = 0;
 
+function saveToStorage() {
+  try { localStorage.setItem('sweetspot_items', JSON.stringify(items)); } catch(e) {}
+}
+
+function loadFromStorage() {
+  try {
+    const saved = localStorage.getItem('sweetspot_items');
+    if (saved) {
+      items = JSON.parse(saved);
+      idCounter = items.length > 0 ? Math.max(...items.map(i => i.id)) + 1 : 0;
+      return true;
+    }
+  } catch(e) {}
+  return false;
+}
+
 function createItem() {
   return { id: idCounter++, price: '', qty: '', unit: 'ml' };
 }
@@ -655,6 +673,7 @@ function addItem() {
   if (items.length >= MAX_ITEMS) return;
   items.push(createItem());
   render();
+  saveToStorage();
   setTimeout(() => {
     const cards = document.querySelectorAll('.item-card');
     if (cards.length > 0) {
@@ -666,6 +685,7 @@ function addItem() {
 function removeItem(id) {
   items = items.filter(i => i.id !== id);
   render();
+  saveToStorage();
 }
 
 function updateItem(id, field, value) {
@@ -673,12 +693,14 @@ function updateItem(id, field, value) {
   if (item) {
     item[field] = value;
     computeAndRender();
+    saveToStorage();
   }
 }
 
 function resetAll() {
   items = [];
   idCounter = 0;
+  try { localStorage.removeItem('sweetspot_items'); } catch(e) {}
   render();
 }
 
@@ -897,8 +919,13 @@ document.getElementById('installClose').addEventListener('click', () => {
 });
 
 // Init
-addItem();
-addItem();
+const loaded = loadFromStorage();
+if (!loaded || items.length === 0) {
+  addItem();
+  addItem();
+} else {
+  render();
+}
 </script>
 </body>
 </html>
