@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="甜蜜值">
-<meta name="theme-color" content="#0a0a0a">
+<meta name="theme-color" content="#FAFAFA">
 <link rel="manifest" href="manifest.json">
 <title>甜蜜值 · 比價器</title>
 <!-- Google tag (gtag.js) -->
@@ -21,19 +21,20 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0a0a0a;
-    --surface: #141414;
-    --surface2: #1e1e1e;
-    --border: #2a2a2a;
-    --accent: #c8f53a;
-    --accent-dim: rgba(200,245,58,0.12);
-    --accent-mid: rgba(200,245,58,0.35);
-    --text: #f0f0f0;
-    --text-dim: #666;
-    --text-mid: #999;
+    --bg: #FAFAFA;
+    --surface: #FFFFFF;
+    --surface2: #F0F0F0;
+    --border: #E0E0E0;
+    --accent: #2D6A4F;
+    --accent-dim: rgba(45,106,79,0.08);
+    --accent-mid: rgba(45,106,79,0.25);
+    --text: #1A1A1A;
+    --text-dim: #AAAAAA;
+    --text-mid: #666666;
     --danger: #ff4d4d;
-    --gold: #f5c842;
-    --silver: #a0a0a0;
+    --sweet: #FF8FAB;
+    --sweet-dim: rgba(255,143,171,0.12);
+    --sweet-mid: rgba(255,143,171,0.35);
     --radius: 16px;
     --radius-sm: 10px;
   }
@@ -69,7 +70,7 @@
     letter-spacing: -0.5px;
   }
   .header-title span {
-    color: var(--accent);
+    color: var(--sweet);
   }
 
   /* Category Selector */
@@ -164,11 +165,11 @@
   }
 
   .item-card.best {
-    border-color: var(--accent);
-    background: linear-gradient(135deg, var(--surface) 0%, rgba(200,245,58,0.05) 100%);
+    border-color: var(--sweet);
+    background: linear-gradient(135deg, var(--surface) 0%, var(--sweet-dim) 100%);
   }
   .item-card.second {
-    border-color: rgba(200,245,58,0.3);
+    border-color: rgba(45,106,79,0.3);
   }
 
   .item-header {
@@ -179,9 +180,10 @@
   }
   .item-num {
     font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    color: var(--text-dim);
+    font-size: 12px;
+    color: #444444;
     letter-spacing: 1px;
+    font-weight: 600;
   }
   .item-badge {
     font-size: 10px;
@@ -192,8 +194,8 @@
     text-transform: uppercase;
   }
   .badge-best {
-    background: var(--accent);
-    color: #0a0a0a;
+    background: var(--sweet);
+    color: #FFFFFF;
   }
   .badge-second {
     background: var(--surface2);
@@ -214,16 +216,17 @@
     gap: 5px;
   }
   .input-label {
-    font-size: 10px;
-    color: var(--text-dim);
+    font-size: 11px;
+    color: #555555;
     letter-spacing: 1px;
     font-family: 'DM Mono', monospace;
+    font-weight: 600;
   }
   .input-field {
-    background: var(--bg);
-    border: 1.5px solid var(--border);
+    background: #F5F5F5;
+    border: 1.5px solid #CCCCCC;
     border-radius: var(--radius-sm);
-    color: var(--text);
+    color: #1A1A1A;
     font-size: 16px;
     font-family: 'DM Mono', monospace;
     font-weight: 500;
@@ -233,19 +236,16 @@
     transition: border-color 0.15s ease;
     -webkit-appearance: none;
   }
-  .input-field:focus {
-    border-color: var(--accent);
-  }
   .input-field::placeholder {
-    color: var(--text-dim);
+    color: #999999;
     font-size: 14px;
   }
 
   .unit-select {
-    background: var(--bg);
-    border: 1.5px solid var(--border);
+    background: #F5F5F5;
+    border: 1.5px solid #CCCCCC;
     border-radius: var(--radius-sm);
-    color: var(--text-mid);
+    color: #1A1A1A;
     font-size: 13px;
     font-family: 'Noto Sans TC', sans-serif;
     padding: 10px 8px;
@@ -254,6 +254,7 @@
     cursor: pointer;
     -webkit-appearance: none;
     text-align: center;
+    font-weight: 500;
   }
   .unit-select:focus { border-color: var(--accent); }
 
@@ -269,8 +270,9 @@
   }
   .result-label {
     font-size: 11px;
-    color: var(--text-dim);
+    color: #555555;
     font-family: 'DM Mono', monospace;
+    font-weight: 600;
   }
   .result-value {
     font-size: 20px;
@@ -280,7 +282,7 @@
     letter-spacing: -0.5px;
   }
   .item-card.best .result-value {
-    color: var(--accent);
+    color: var(--sweet);
     font-size: 22px;
   }
   .item-card.second .result-value {
@@ -351,18 +353,18 @@
     color: var(--text);
   }
   .summary-item.highlight {
-    background: var(--accent-dim);
-    border: 1px solid var(--accent-mid);
+    background: var(--sweet-dim);
+    border: 1px solid var(--sweet-mid);
   }
-  .summary-item.highlight .summary-item-label { color: var(--accent); opacity: 0.7; }
-  .summary-item.highlight .summary-item-val { color: var(--accent); }
+  .summary-item.highlight .summary-item-label { color: var(--sweet); opacity: 0.7; }
+  .summary-item.highlight .summary-item-val { color: var(--sweet); }
 
   /* Savings indicator */
   .savings-row {
     margin-top: 10px;
     padding: 10px 12px;
-    background: var(--accent-dim);
-    border: 1px solid var(--accent-mid);
+    background: var(--sweet-dim);
+    border: 1px solid var(--sweet-mid);
     border-radius: var(--radius-sm);
     display: flex;
     justify-content: space-between;
@@ -370,14 +372,14 @@
   }
   .savings-text {
     font-size: 12px;
-    color: var(--accent);
+    color: var(--sweet);
     font-weight: 500;
   }
   .savings-val {
     font-family: 'DM Mono', monospace;
     font-size: 13px;
     font-weight: 700;
-    color: var(--accent);
+    color: var(--sweet);
   }
 
   /* Buttons */
@@ -390,7 +392,7 @@
   .btn-add {
     flex: 1;
     background: var(--accent);
-    color: #0a0a0a;
+    color: #FFFFFF;
     border: none;
     border-radius: var(--radius-sm);
     padding: 14px;
@@ -426,7 +428,7 @@
     line-height: 1.8;
   }
   .empty-arrow {
-    color: var(--accent);
+    color: var(--sweet);
     font-size: 24px;
     display: block;
     margin-bottom: 8px;
@@ -452,7 +454,7 @@
   .install-banner {
     margin: 0 20px 16px;
     background: var(--surface);
-    border: 1.5px solid var(--accent-mid);
+    border: 1.5px solid var(--sweet-mid);
     border-radius: var(--radius);
     padding: 16px;
     position: relative;
@@ -520,7 +522,7 @@
   .btn-donate {
     display: block;
     background: var(--accent);
-    color: #0a0a0a;
+    color: #FFFFFF;
     text-decoration: none;
     border-radius: var(--radius-sm);
     padding: 14px;
@@ -604,7 +606,7 @@
     <div style="background:var(--bg);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:12px;font-family:'DM Mono',monospace;font-size:12px;line-height:2;">
       <div>可口可樂 250ml／$25　→　$0.10／ml</div>
       <div>可口可樂 600ml／$35　→　$0.058／ml</div>
-      <div style="color:var(--accent);">可口可樂 1250ml／$59　→　$0.047／ml　✦ 甜蜜值</div>
+      <div style="color:var(--sweet);">可口可樂 1250ml／$59　→　$0.047／ml　✦ 甜蜜值</div>
     </div>
     <div style="margin-bottom:12px;">最划算的是 1250ml。至於喝不喝得完，你自己想。</div>
     <div style="margin-bottom:12px;color:var(--text);">把價格跟容量輸進去，甜蜜值自動亮起來，3 秒結束戰鬥。</div>
