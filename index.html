@@ -7,6 +7,14 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0a0a0a">
 <title>甜蜜值 · 比價器</title>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Y79Z23GQYQ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-Y79Z23GQYQ');
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -879,7 +887,10 @@ const banner = document.getElementById('installBanner');
 const stepsEl = document.getElementById('installSteps');
 
 if (!isStandalone && (isIOS || isAndroid)) {
-  if (isIOS) {
+  const isChrome = /CriOS/i.test(navigator.userAgent);
+  if (isIOS && isChrome) {
+    stepsEl.innerHTML = `1. 點右上角 <strong>⋯</strong> 選單<br>2. 選「<strong>加入主畫面</strong>」<br>3. 點「新增」，完成 ✓`;
+  } else if (isIOS) {
     stepsEl.innerHTML = `1. 點底部 <strong>分享</strong> 按鈕（□↑）<br>2. 選「<strong>加入主畫面</strong>」<br>3. 點右上角「新增」，完成 ✓`;
   } else {
     stepsEl.innerHTML = `1. 點右上角 <strong>三點選單</strong>（⋮）<br>2. 選「<strong>安裝應用程式</strong>」或「加到主畫面」<br>3. 確認安裝，完成 ✓`;
