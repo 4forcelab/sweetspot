@@ -886,14 +886,12 @@ const isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
 const banner = document.getElementById('installBanner');
 const stepsEl = document.getElementById('installSteps');
 
-if (!isStandalone && (isIOS || isAndroid)) {
-  const isChrome = /CriOS/i.test(navigator.userAgent);
-  if (isIOS && isChrome) {
-    stepsEl.innerHTML = `1. 點右上角 <strong>⋯</strong> 選單<br>2. 選「<strong>加入主畫面</strong>」<br>3. 點「新增」，完成 ✓`;
-  } else if (isIOS) {
-    stepsEl.innerHTML = `1. 點底部 <strong>分享</strong> 按鈕（□↑）<br>2. 選「<strong>加入主畫面</strong>」<br>3. 點右上角「新增」，完成 ✓`;
+if (!isStandalone) {
+  const isChrome = /CriOS|Chrome/i.test(navigator.userAgent) && !/Edg/i.test(navigator.userAgent);
+  if (isIOS && !isChrome) {
+    stepsEl.innerHTML = `<strong style="color:var(--accent)">Apple iOS（Safari）</strong><br>點下方工具列「分享」按鈕 → 選「加入主畫面」→ 完成 ✓`;
   } else {
-    stepsEl.innerHTML = `1. 點右上角 <strong>三點選單</strong>（⋮）<br>2. 選「<strong>安裝應用程式</strong>」或「加到主畫面」<br>3. 確認安裝，完成 ✓`;
+    stepsEl.innerHTML = `<strong style="color:var(--accent)">Android / Apple iOS（Chrome）</strong><br>點右上角「⋯」→ 選「加到主畫面」→ 點「安裝」→ 完成 ✓`;
   }
   banner.style.display = 'block';
 } else {
