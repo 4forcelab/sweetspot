@@ -873,14 +873,6 @@ document.getElementById('itemsContainer').addEventListener('click', e => {
   if (btn) removeItem(parseInt(btn.dataset.id));
 });
 
-document.getElementById('catScroll').addEventListener('click', e => {
-  const chip = e.target.closest('.cat-chip');
-  if (!chip) return;
-  document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
-  chip.classList.add('active');
-  selectedCat = chip.dataset.cat;
-});
-
 // Install banner
 const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
 const isAndroid = /android/i.test(navigator.userAgent);
