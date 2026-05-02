@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0a0a0a">
+<title>甜蜜值 · 比價器</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #141414;
+    --surface2: #1e1e1e;
+    --border: #2a2a2a;
+    --accent: #c8f53a;
+    --accent-dim: rgba(200,245,58,0.12);
+    --accent-mid: rgba(200,245,58,0.35);
+    --text: #f0f0f0;
+    --text-dim: #666;
+    --text-mid: #999;
+    --danger: #ff4d4d;
+    --gold: #f5c842;
+    --silver: #a0a0a0;
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans TC', sans-serif;
+    min-height: 100dvh;
+    padding: 0 0 80px;
+    overflow-x: hidden;
+  }
+
+  /* Header */
+  .header {
+    padding: 52px 20px 20px;
+    position: relative;
+  }
+  .header-tag {
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    font-family: 'DM Mono', monospace;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .header-title {
+    font-size: 28px;
+    font-weight: 900;
+    line-height: 1.1;
+    letter-spacing: -0.5px;
+  }
+  .header-title span {
+    color: var(--accent);
+  }
+
+  /* Category Selector */
+  .section {
+    padding: 0 20px;
+    margin-bottom: 20px;
+  }
+  .section-label {
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    font-family: 'DM Mono', monospace;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .category-scroll {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .category-scroll::-webkit-scrollbar { display: none; }
+
+  .cat-chip {
+    flex-shrink: 0;
+    padding: 8px 16px;
+    border-radius: 100px;
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    color: var(--text-mid);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+    font-family: 'Noto Sans TC', sans-serif;
+  }
+  .cat-chip.active {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+    color: var(--accent);
+  }
+
+  /* Unit hint */
+  .unit-hint {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--text-mid);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .unit-hint-icon {
+    color: var(--accent);
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .unit-examples {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 2px;
+  }
+
+  /* Items */
+  .items-container {
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .item-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px;
+    position: relative;
+    transition: border-color 0.2s ease;
+    animation: slideIn 0.2s ease;
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .item-card.best {
+    border-color: var(--accent);
+    background: linear-gradient(135deg, var(--surface) 0%, rgba(200,245,58,0.05) 100%);
+  }
+  .item-card.second {
+    border-color: rgba(200,245,58,0.3);
+  }
+
+  .item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .item-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+  }
+  .item-badge {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    padding: 3px 10px;
+    border-radius: 100px;
+    text-transform: uppercase;
+  }
+  .badge-best {
+    background: var(--accent);
+    color: #0a0a0a;
+  }
+  .badge-second {
+    background: var(--surface2);
+    color: var(--text-mid);
+    border: 1px solid var(--border);
+  }
+
+  .item-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr 80px;
+    gap: 8px;
+    align-items: end;
+  }
+
+  .input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .input-label {
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    font-family: 'DM Mono', monospace;
+  }
+  .input-field {
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-size: 16px;
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
+    padding: 10px 12px;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.15s ease;
+    -webkit-appearance: none;
+  }
+  .input-field:focus {
+    border-color: var(--accent);
+  }
+  .input-field::placeholder {
+    color: var(--text-dim);
+    font-size: 14px;
+  }
+
+  .unit-select {
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text-mid);
+    font-size: 13px;
+    font-family: 'Noto Sans TC', sans-serif;
+    padding: 10px 8px;
+    width: 100%;
+    outline: none;
+    cursor: pointer;
+    -webkit-appearance: none;
+    text-align: center;
+  }
+  .unit-select:focus { border-color: var(--accent); }
+
+  /* Result row */
+  .item-result {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 28px;
+  }
+  .result-label {
+    font-size: 11px;
+    color: var(--text-dim);
+    font-family: 'DM Mono', monospace;
+  }
+  .result-value {
+    font-size: 20px;
+    font-weight: 700;
+    font-family: 'DM Mono', monospace;
+    color: var(--text-dim);
+    letter-spacing: -0.5px;
+  }
+  .item-card.best .result-value {
+    color: var(--accent);
+    font-size: 22px;
+  }
+  .item-card.second .result-value {
+    color: var(--text);
+  }
+
+  .delete-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    transition: all 0.15s ease;
+  }
+  .delete-btn:hover, .delete-btn:active {
+    background: var(--danger);
+    border-color: var(--danger);
+    color: white;
+  }
+
+  /* Summary bar */
+  .summary-bar {
+    margin: 0 20px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    display: none;
+  }
+  .summary-bar.visible { display: block; }
+  .summary-title {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    font-family: 'DM Mono', monospace;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .summary-item {
+    background: var(--bg);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+  }
+  .summary-item-label {
+    font-size: 10px;
+    color: var(--text-dim);
+    font-family: 'DM Mono', monospace;
+    margin-bottom: 4px;
+  }
+  .summary-item-val {
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'DM Mono', monospace;
+    color: var(--text);
+  }
+  .summary-item.highlight {
+    background: var(--accent-dim);
+    border: 1px solid var(--accent-mid);
+  }
+  .summary-item.highlight .summary-item-label { color: var(--accent); opacity: 0.7; }
+  .summary-item.highlight .summary-item-val { color: var(--accent); }
+
+  /* Savings indicator */
+  .savings-row {
+    margin-top: 10px;
+    padding: 10px 12px;
+    background: var(--accent-dim);
+    border: 1px solid var(--accent-mid);
+    border-radius: var(--radius-sm);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .savings-text {
+    font-size: 12px;
+    color: var(--accent);
+    font-weight: 500;
+  }
+  .savings-val {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  /* Buttons */
+  .btn-row {
+    padding: 0 20px;
+    display: flex;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .btn-add {
+    flex: 1;
+    background: var(--accent);
+    color: #0a0a0a;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 14px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Noto Sans TC', sans-serif;
+    cursor: pointer;
+    transition: opacity 0.15s ease, transform 0.1s ease;
+    letter-spacing: 0.5px;
+  }
+  .btn-add:active { opacity: 0.8; transform: scale(0.98); }
+
+  .btn-reset {
+    background: var(--surface);
+    color: var(--text-mid);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px 18px;
+    font-size: 13px;
+    font-family: 'Noto Sans TC', sans-serif;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+  }
+  .btn-reset:active { background: var(--surface2); }
+
+  /* Empty state */
+  .empty-hint {
+    text-align: center;
+    padding: 30px 20px;
+    color: var(--text-dim);
+    font-size: 13px;
+    line-height: 1.8;
+  }
+  .empty-arrow {
+    color: var(--accent);
+    font-size: 24px;
+    display: block;
+    margin-bottom: 8px;
+    animation: bounce 1.5s infinite;
+  }
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+  }
+
+  /* Max items warning */
+  .max-warning {
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-dim);
+    padding: 8px;
+    font-family: 'DM Mono', monospace;
+    display: none;
+  }
+  .max-warning.visible { display: block; }
+
+  /* Install Banner */
+  .install-banner {
+    margin: 0 20px 16px;
+    background: var(--surface);
+    border: 1.5px solid var(--accent-mid);
+    border-radius: var(--radius);
+    padding: 16px;
+    position: relative;
+    animation: slideIn 0.3s ease;
+  }
+  .install-banner-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-dim);
+    cursor: pointer;
+    font-size: 12px;
+  }
+  .install-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 10px;
+    padding-right: 24px;
+  }
+  .install-steps {
+    font-size: 12px;
+    color: var(--text-mid);
+    line-height: 1.9;
+  }
+  .install-steps strong { color: var(--accent); }
+
+  /* Footer */
+  .footer {
+    padding: 0 20px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .footer-brand {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+  }
+  .footer-logo {
+    font-size: 28px;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+  .footer-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .footer-tagline {
+    font-size: 12px;
+    color: var(--text-mid);
+    line-height: 1.7;
+  }
+  .btn-donate {
+    display: block;
+    background: var(--accent);
+    color: #0a0a0a;
+    text-decoration: none;
+    border-radius: var(--radius-sm);
+    padding: 14px;
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+    font-family: 'Noto Sans TC', sans-serif;
+    transition: opacity 0.15s ease;
+  }
+  .btn-donate:active { opacity: 0.8; }
+  .footer-fb {
+    display: block;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    color: var(--text-mid);
+    text-decoration: none;
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    font-size: 13px;
+    text-align: center;
+    font-family: 'Noto Sans TC', sans-serif;
+  }
+  .footer-copy {
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-dim);
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 1px;
+    padding-bottom: 8px;
+  }
+    height: 1px;
+    background: var(--border);
+    margin: 20px 20px 16px;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-tag">Design by MEIMEIHOTPOT</div>
+  <div class="header-title">最划算<span>比價器</span></div>
+</div>
+
+<!-- Category -->
+<div class="section">
+  <div class="section-label">品類</div>
+  <div class="category-scroll" id="catScroll">
+    <button class="cat-chip active" data-cat="不限">🔍 不限</button>
+    <button class="cat-chip" data-cat="飲料">🥤 飲料</button>
+    <button class="cat-chip" data-cat="食品">🍜 食品</button>
+    <button class="cat-chip" data-cat="個人清潔">🧴 個人清潔</button>
+    <button class="cat-chip" data-cat="家庭清潔">🧹 家庭清潔</button>
+    <button class="cat-chip" data-cat="廚房用品">🍳 廚房用品</button>
+    <button class="cat-chip" data-cat="嬰幼兒">👶 嬰幼兒</button>
+    <button class="cat-chip" data-cat="寵物">🐾 寵物</button>
+  </div>
+</div>
+
+<!-- Unit hint -->
+<div class="section">
+  <div class="unit-hint">
+    <span class="unit-hint-icon">💡</span>
+    <div>
+      <div>同一次比較請用<strong>相同單位</strong></div>
+      <div class="unit-examples">ml · L · g · kg · 張 · 片 · 盒 · 包 · 顆</div>
+    </div>
+  </div>
+</div>
+
+<!-- Items -->
+<div class="items-container" id="itemsContainer"></div>
+
+<!-- Summary -->
+<div class="summary-bar" id="summaryBar">
+  <div class="summary-title">比較結果</div>
+  <div class="summary-grid" id="summaryGrid"></div>
+  <div class="savings-row" id="savingsRow" style="display:none">
+    <span class="savings-text">✦ 選甜蜜值比最貴划算</span>
+    <span class="savings-val" id="savingsVal"></span>
+  </div>
+</div>
+
+<!-- Buttons -->
+<div class="btn-row">
+  <button class="btn-add" id="btnAdd">＋ 加一組</button>
+  <button class="btn-reset" id="btnReset">清空</button>
+</div>
+<div class="max-warning" id="maxWarning">已達上限 6 組</div>
+
+<!-- Install Banner -->
+<div class="install-banner" id="installBanner">
+  <div class="install-banner-close" id="installClose">✕</div>
+  <div class="install-title">📲 加到手機桌面，用起來像APP</div>
+  <div class="install-steps" id="installSteps"></div>
+</div>
+
+<!-- Divider -->
+<div class="divider"></div>
+
+<!-- Footer -->
+<div class="footer">
+  <div class="footer-brand">
+    <div class="footer-logo">🍲</div>
+    <div>
+      <div class="footer-name">鍋美美食艷室 出品</div>
+      <div class="footer-tagline">每次買東西算錢好麻煩，又怕賣場亂標價。自己算最安心。<br>省下來的錢，可以多買一碗鍋美美。</div>
+    </div>
+  </div>
+  <a class="btn-donate" href="https://api.payuni.com.tw/api/uop/receive_info/2/1/HTCU1141106001200/J95l2unXp1YGYk6U582C" target="_blank" rel="noopener">
+    ☕ 贊助我們（PAYUNi 官方金流）
+  </a>
+  <a class="footer-fb" href="https://www.facebook.com/hotpotmeimei?locale=zh_TW" target="_blank" rel="noopener">
+    📘 鍋美美食艷室 Facebook
+  </a>
+  <div class="footer-copy">甜蜜值比價器 · 免費使用 · 無廣告</div>
+  <div class="footer-copy" style="margin-top:-6px">© 萬合天宜有限公司 4forcelab · <a href="mailto:info@4force.com.tw" style="color:inherit;text-decoration:underline;text-underline-offset:3px;">info@4force.com.tw</a></div>
+</div>
+
+<script>
+const UNITS = ['ml','L','g','kg','張','片','捲','盒','包','顆','份','個'];
+const MAX_ITEMS = 6;
+
+let items = [];
+let selectedCat = '不限';
+let idCounter = 0;
+
+function createItem() {
+  return { id: idCounter++, price: '', qty: '', unit: 'ml' };
+}
+
+function addItem() {
+  if (items.length >= MAX_ITEMS) return;
+  items.push(createItem());
+  render();
+  setTimeout(() => {
+    const cards = document.querySelectorAll('.item-card');
+    if (cards.length > 0) {
+      cards[cards.length - 1].scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, 100);
+}
+
+function removeItem(id) {
+  items = items.filter(i => i.id !== id);
+  render();
+}
+
+function updateItem(id, field, value) {
+  const item = items.find(i => i.id === id);
+  if (item) {
+    item[field] = value;
+    computeAndRender();
+  }
+}
+
+function resetAll() {
+  items = [];
+  idCounter = 0;
+  render();
+}
+
+function computeUnitPrice(item) {
+  const p = parseFloat(item.price);
+  const q = parseFloat(item.qty);
+  if (!p || !q || q === 0) return null;
+  return p / q;
+}
+
+function computeAndRender() {
+  const results = items.map(item => ({
+    ...item,
+    unitPrice: computeUnitPrice(item)
+  }));
+
+  const valid = results.filter(r => r.unitPrice !== null);
+  valid.sort((a, b) => a.unitPrice - b.unitPrice);
+
+  const bestId = valid.length > 0 ? valid[0].id : null;
+  const secondId = valid.length > 1 ? valid[1].id : null;
+
+  // Update cards
+  items.forEach(item => {
+    const card = document.getElementById(`card-${item.id}`);
+    if (!card) return;
+
+    card.className = 'item-card';
+    if (item.id === bestId) card.classList.add('best');
+    else if (item.id === secondId) card.classList.add('second');
+
+    // Badge
+    const badge = card.querySelector('.item-badge');
+    badge.className = 'item-badge';
+    if (item.id === bestId) {
+      badge.className = 'item-badge badge-best';
+      badge.textContent = '✦ 甜蜜值';
+      badge.style.display = '';
+    } else if (item.id === secondId) {
+      badge.className = 'item-badge badge-second';
+      badge.textContent = '2nd';
+      badge.style.display = valid.length > 2 ? '' : 'none';
+    } else {
+      badge.style.display = 'none';
+    }
+
+    // Result
+    const resultVal = card.querySelector('.result-value');
+    const up = computeUnitPrice(item);
+    const unit = item.unit || '';
+    if (up !== null) {
+      resultVal.textContent = `$${up.toFixed(2)} / ${unit}`;
+    } else {
+      resultVal.textContent = '—';
+    }
+  });
+
+  // Summary
+  const summaryBar = document.getElementById('summaryBar');
+  const summaryGrid = document.getElementById('summaryGrid');
+  const savingsRow = document.getElementById('savingsRow');
+  const savingsVal = document.getElementById('savingsVal');
+
+  if (valid.length >= 2) {
+    summaryBar.classList.add('visible');
+    summaryGrid.innerHTML = '';
+
+    const best = valid[0];
+    const worst = valid[valid.length - 1];
+    const unit = best.unit || '';
+
+    const bestEl = document.createElement('div');
+    bestEl.className = 'summary-item highlight';
+    bestEl.innerHTML = `<div class="summary-item-label">✦ 甜蜜值</div><div class="summary-item-val">$${best.unitPrice.toFixed(2)}/${unit}</div>`;
+    summaryGrid.appendChild(bestEl);
+
+    const worstEl = document.createElement('div');
+    worstEl.className = 'summary-item';
+    worstEl.innerHTML = `<div class="summary-item-label">最貴單價</div><div class="summary-item-val">$${worst.unitPrice.toFixed(2)}/${unit}</div>`;
+    summaryGrid.appendChild(worstEl);
+
+    // Savings %
+    if (best.unitPrice < worst.unitPrice) {
+      const pct = ((worst.unitPrice - best.unitPrice) / worst.unitPrice * 100).toFixed(1);
+      savingsRow.style.display = '';
+      savingsVal.textContent = `省 ${pct}%`;
+    } else {
+      savingsRow.style.display = 'none';
+    }
+  } else {
+    summaryBar.classList.remove('visible');
+  }
+}
+
+function render() {
+  const container = document.getElementById('itemsContainer');
+  const maxWarning = document.getElementById('maxWarning');
+  const btnAdd = document.getElementById('btnAdd');
+
+  // Remove deleted cards
+  const existingIds = new Set(items.map(i => i.id));
+  document.querySelectorAll('.item-card').forEach(card => {
+    const id = parseInt(card.dataset.id);
+    if (!existingIds.has(id)) card.remove();
+  });
+
+  // Add new cards
+  items.forEach((item, index) => {
+    if (document.getElementById(`card-${item.id}`)) return;
+
+    const card = document.createElement('div');
+    card.className = 'item-card';
+    card.id = `card-${item.id}`;
+    card.dataset.id = item.id;
+
+    const unitOptions = UNITS.map(u =>
+      `<option value="${u}" ${u === item.unit ? 'selected' : ''}>${u}</option>`
+    ).join('');
+
+    card.innerHTML = `
+      <div class="item-header">
+        <span class="item-num">第 ${index + 1} 組</span>
+        <span class="item-badge" style="display:none"></span>
+      </div>
+      <button class="delete-btn" data-id="${item.id}" aria-label="刪除">✕</button>
+      <div class="item-inputs">
+        <div class="input-group">
+          <div class="input-label">價格 ($)</div>
+          <input class="input-field" type="number" inputmode="decimal" placeholder="39" value="${item.price}" data-id="${item.id}" data-field="price">
+        </div>
+        <div class="input-group">
+          <div class="input-label">數量</div>
+          <input class="input-field" type="number" inputmode="decimal" placeholder="600" value="${item.qty}" data-id="${item.id}" data-field="qty">
+        </div>
+        <div class="input-group">
+          <div class="input-label">單位</div>
+          <select class="unit-select" data-id="${item.id}" data-field="unit">${unitOptions}</select>
+        </div>
+      </div>
+      <div class="item-result">
+        <span class="result-label">單位價格</span>
+        <span class="result-value">—</span>
+      </div>
+    `;
+
+    container.appendChild(card);
+  });
+
+  // Update item numbers
+  document.querySelectorAll('.item-num').forEach((el, i) => {
+    el.textContent = `第 ${i + 1} 組`;
+  });
+
+  // Empty state
+  let emptyHint = document.getElementById('emptyHint');
+  if (items.length === 0) {
+    if (!emptyHint) {
+      emptyHint = document.createElement('div');
+      emptyHint.className = 'empty-hint';
+      emptyHint.id = 'emptyHint';
+      emptyHint.innerHTML = `<span class="empty-arrow">↓</span>點「加一組」開始比價`;
+      container.appendChild(emptyHint);
+    }
+  } else {
+    if (emptyHint) emptyHint.remove();
+  }
+
+  maxWarning.classList.toggle('visible', items.length >= MAX_ITEMS);
+  btnAdd.style.opacity = items.length >= MAX_ITEMS ? '0.4' : '1';
+
+  computeAndRender();
+}
+
+// Events
+document.getElementById('btnAdd').addEventListener('click', addItem);
+document.getElementById('btnReset').addEventListener('click', resetAll);
+
+document.getElementById('itemsContainer').addEventListener('input', e => {
+  const field = e.target.dataset.field;
+  const id = parseInt(e.target.dataset.id);
+  if (field && !isNaN(id)) updateItem(id, field, e.target.value);
+});
+
+document.getElementById('itemsContainer').addEventListener('change', e => {
+  const field = e.target.dataset.field;
+  const id = parseInt(e.target.dataset.id);
+  if (field && !isNaN(id)) updateItem(id, field, e.target.value);
+});
+
+document.getElementById('itemsContainer').addEventListener('click', e => {
+  const btn = e.target.closest('.delete-btn');
+  if (btn) removeItem(parseInt(btn.dataset.id));
+});
+
+document.getElementById('catScroll').addEventListener('click', e => {
+  const chip = e.target.closest('.cat-chip');
+  if (!chip) return;
+  document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
+  chip.classList.add('active');
+  selectedCat = chip.dataset.cat;
+});
+
+// Install banner
+const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+const isAndroid = /android/i.test(navigator.userAgent);
+const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+const banner = document.getElementById('installBanner');
+const stepsEl = document.getElementById('installSteps');
+
+if (!isStandalone && (isIOS || isAndroid)) {
+  if (isIOS) {
+    stepsEl.innerHTML = `1. 點底部 <strong>分享</strong> 按鈕（□↑）<br>2. 選「<strong>加入主畫面</strong>」<br>3. 點右上角「新增」，完成 ✓`;
+  } else {
+    stepsEl.innerHTML = `1. 點右上角 <strong>三點選單</strong>（⋮）<br>2. 選「<strong>安裝應用程式</strong>」或「加到主畫面」<br>3. 確認安裝，完成 ✓`;
+  }
+  banner.style.display = 'block';
+} else {
+  banner.style.display = 'none';
+}
+
+document.getElementById('installClose').addEventListener('click', () => {
+  banner.style.display = 'none';
+});
+
+// Init
+addItem();
+addItem();
+</script>
+</body>
+</html>
